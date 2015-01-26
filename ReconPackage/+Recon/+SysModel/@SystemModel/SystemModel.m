@@ -1,21 +1,38 @@
-% SYSTEMMODEL
-% An abstract class that defines methods for a system mode
+%% SYSTEMMODEL
+%
+%   An abstract class defining a particular system model represenation
 %
 % Author: Scott Haile Robertson
-% Website: www.ScottHaileRoberston.com
-classdef (Abstract = true, ConstructOnLoad = false) SystemModel
-	properties
-		reconMatrixSize;
-		A;					% System Representation
-		unique_string;
-		reconVol;
-	end
-	methods
-		function reconVol = imageSpace(obj, reconVol)
-			reconVol = ifftn(reconVol);
-		end
-	end
-	methods (Abstract)
-		true_false = isCompatible(obj,traj,header,overgridfactor,nNeighbors);
-	end
+% Website: www.ScottHaileRobertson.com
+%
+classdef (Abstract) SystemModel
+    properties
+        proximity;
+        cropsize;
+        fullsize;
+        overgrid;
+        unique_string;
+        verbose;
+    end
+    methods
+        % Constructor
+        function obj = SystemModel(overgridFactor, cropSize, proximityObj, verbosity)
+            obj.verbose = verbosity;
+            obj.overgrid = overgridFactor;
+            obj.proximity = proximityObj;
+            obj.cropsize = cropSize;
+            obj.fullsize = ceil(obj.cropsize*obj.overgrid);
+        end
+        
+        function croppedVol = crop(obj,uncroppedVol)
+            croppedVol = subvolume(uncroppedVol,...
+                [[0.5*(obj.fullsize-obj.cropsize)+1]; ...
+                [0.5*(obj.fullsize+obj.cropsize)]]);
+        end
+    end
+    
+    methods (Abstract)
+        c = mtimes(obj,b); %a*b
+        b = ctranspose(obj); %a'
+    end
 end

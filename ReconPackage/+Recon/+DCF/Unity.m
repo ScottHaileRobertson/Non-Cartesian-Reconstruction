@@ -1,12 +1,20 @@
+%% UNITY
+%
+%   An unity DCF class treats all samples as having the same (unit) density
+%
+%   Author: Scott Haile Robertson
+%   Website: www.ScottHaileRobertson.com
+%
 classdef Unity < Recon.DCF.DCF
 	methods
 		% Constructor
-		function obj = Unity(traj, verbosity)
+		function obj = Unity(traj, verbosity)      
+            % Call super constructor to build obj
+            obj = obj@Recon.DCF.DCF(verbosity);
+            
 			% Store properties of DCF
-			obj.verbose = verbosity;
-			obj.dcf_type = 'unity';
 			obj.unique_string = 'unityDcf';
-			obj.dcf_style = 'dataspace';
+			obj.space = 'dataspace';
 			
 			obj.dcf = ones(size(traj,1),1);
 		end

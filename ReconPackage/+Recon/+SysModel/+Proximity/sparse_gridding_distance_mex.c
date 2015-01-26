@@ -103,7 +103,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
 	mxAssert(mxGetDimensions(prhs[2])[1] == 1, "vol_dims must be a column vector.");
 	output_dims = (unsigned int *) mxGetPr(prhs[2]);            // output dimensions
 	
-	/* INPUT 3 - OUTPUT VOLUME DIMS - Used to create output volume */
+	/* INPUT 3 - FORCE DIMS */
 	mxAssert(!mxIsEmpty(prhs[3]),"force_dims cannot be null.");
 	mxAssert(mxGetNumberOfDimensions(prhs[3]) == 2, "force_dims must be a scalar.");
 	mxAssert(mxGetDimensions(prhs[3])[0] == 1, "force_dims must be a scalar.");

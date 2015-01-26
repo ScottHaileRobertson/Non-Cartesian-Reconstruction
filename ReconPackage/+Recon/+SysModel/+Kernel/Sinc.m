@@ -1,33 +1,37 @@
+%% Sinc
+%   A sinc class of gridding kernel.
+%
+%   inputs: firstZero       - location of the first sinc zero
+%           kernelExtent    - The nonzero range of the kernel in units of 
+%                             pre-overgridded k-space voxels
+%           verbose         - If 1, it will verbosely print information
+%
+% Author: Scott Haile Robertson
+% Website: www.ScottHaileRobertson.com
+%
 classdef Sinc < Recon.SysModel.Kernel.Kernel
 	properties
-		kernel_extent_oversamp;
-		overgrid_factor;
+        firstzero;
 	end
 	
 	methods
 		% Constructor
-		function obj = Sinc(kernelExtentOversamp, overgridFactor, verbose)
+		function obj = Sinc(firstZero, kernelExtent, verbose)
 			% Call super constructor to build obj
-			obj = obj@Recon.SysModel.Kernel.Kernel(verbose);
+			obj = obj@Recon.SysModel.Kernel.Kernel(kernelExtent, verbose);
 			
 			% Store properties
-			obj.kernel_extent_oversamp = kernelExtentOversamp;
-			obj.overgrid_factor = overgridFactor;
+			obj.firstzero = firstZero;
 						
 			% Fill in unique string
-			obj.unique_string = ['sinc_width' num2str(obj.kernel_extent_oversamp) ...
-				'_overgrid' num2str(obj.overgrid_factor)];
+			obj.unique_string = ['sinc_e' num2str(obj.extent) ...
+				'_s' num2str(obj.firstzero)];
 		end
 		
-		function [kernel_vals] = kernelValues(obj, distances)
-		
+		function [kernel_vals] = evaluate(obj, distances)
 			% Calculate sinc Function
-			kernel_vals = sin(2*pi*distances)./(2*pi*distances);
+			kernel_vals = sin(2*pi*distances/obj.firstzero)./(2*pi*distances/obj.firstzero);
 			kernel_vals(distances==0)=1;
-			
-			%Normalize
-			kernel_vals = kernel_vals/max(kernel_vals(:));
-% 			kernel_vals = kernel_vals/sum(kernel_vals(:)); % seems better than max...  
 		end
 	end
 end

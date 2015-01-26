@@ -1,9 +1,33 @@
-classdef DCF
+%% DCF
+%
+%   An abstract class describes how to calculate a density compensation
+%   function (DCF) as well as store the DCF coefficients. 
+%
+% Author: Scott Haile Robertson
+% Website: www.ScottHaileRobertson.com
+classdef (Abstract) DCF
 	properties
-		dcf_type;
 		dcf;
 		unique_string;
-		dcf_style;
+		space;
 		verbose;
-	end
+    end
+    methods
+        % Constructor
+        function obj = DCF(verbosity)           
+			% Store properties of DCF
+			obj.verbose = verbosity;
+        end
+        
+        % c = a.*b
+        function c = times(a,b)
+            if(isa(a, 'Recon.DCF.DCF'))
+                c = a.dcf.*b;
+            elseif(isa(b, 'Recon.DCF.DCF'))
+                c = b.dcf.*a;
+            else
+                error('Using times directly is not supported.');
+            end
+        end
+    end
 end
