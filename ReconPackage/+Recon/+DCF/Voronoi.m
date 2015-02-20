@@ -11,7 +11,7 @@
 classdef Voronoi < Recon.DCF.DCF
 	methods
 		% Constructor
-		function obj = VoronoiDcf(traj, header, verbosity) 
+		function obj = Voronoi(traj, header, verbosity)           
             % Call super constructor to build obj
             obj = obj@Recon.DCF.DCF(verbosity);
             

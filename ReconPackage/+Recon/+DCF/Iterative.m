@@ -32,14 +32,17 @@ classdef Iterative < Recon.DCF.DCF
             % ungrid zeros unnecessarily
             if(isa(modelObj,'Recon.SysModel.MatrixSystemModel'))
                 modelObj = modelObj.makeSuperSparse();
+                idealPSFdata = ones(size(modelObj.A,2),1);
+            else
+                idealPSFdata = ones(prod(modelObj.fullsize),1);
             end
             
-            obj.dcf = 1./(modelObj.A * ones(size(modelObj.A,2),1)); % Reasonable first guess
+            obj.dcf = 1./(modelObj * idealPSFdata); % Reasonable first guess
             for iter = 1:obj.iterations
                 if(obj.verbose)
                     disp(['   DCF Iteration:' num2str(iter)]);
                 end
-                obj.dcf = obj.dcf ./ (modelObj.A * (modelObj.A'*obj.dcf));
+                obj.dcf = obj.dcf ./ (modelObj * (modelObj'*obj.dcf));
             end
             
             % Undo sparser system model so we dont break anything

@@ -19,7 +19,7 @@ classdef L1Proximity < Recon.SysModel.Proximity.Proximity
         end
 		
         function [sample_idx,voxel_idx,kernel_vals] = evaluateKernel(...
-                obj, traj, matrixSize)
+                obj, traj, overgridFactor, matrixSize)
 			
             % Calculate gridding in pre-overgridding distances
 			if(obj.verbose)
@@ -36,7 +36,7 @@ classdef L1Proximity < Recon.SysModel.Proximity.Proximity
                 % Only calculate for this dimension (c uses 0-indexing!)
 				[sample_idx,voxel_idx,distDim] = ...
 					Recon.SysModel.Proximity.sparse_gridding_distance_mex(traj',...
-					obj.kernel.extent,...
+					obj.kernel.extent*overgridFactor,...
 					uint32(matrixSize'), iDim-1);
 				
 				% Look for any values that are still out of bounds
