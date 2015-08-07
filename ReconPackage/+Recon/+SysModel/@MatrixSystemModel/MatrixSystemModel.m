@@ -16,8 +16,10 @@
 classdef MatrixSystemModel < Recon.SysModel.SystemModel
     properties
         A;
+        ATrans;
         supersparse;
         issupersparse;
+        istranspose = false;
     end
     methods
         % Constructor
@@ -43,6 +45,7 @@ classdef MatrixSystemModel < Recon.SysModel.SystemModel
             % Make sparse matrix
             obj.A = sparse(sample_idx,voxel_idx,kernel_vals,size(traj,1),...
                 prod(obj.fullsize),length(sample_idx));
+            obj.ATrans = obj.A';
         end
         
         function varargout = makeSuperSparse(obj, varargin)
@@ -63,6 +66,8 @@ classdef MatrixSystemModel < Recon.SysModel.SystemModel
                     obj.supersparse.fullsize(1), ...
                     length(obj.supersparse.uniqueNzCols),...
                     length(nzvals));
+                
+                obj.ATrans = obj.A';
                 
                 % Change sparseness flag
                 obj.issupersparse = true;
@@ -106,6 +111,7 @@ classdef MatrixSystemModel < Recon.SysModel.SystemModel
                 % apply less sparse matrix to object, remove supersparse
                 % data and revert sparseness flag
                 obj.A = tmpSparse;
+                obj.ATrans = obj.A';
                 obj.issupersparse = false;
                 clear tmpSparse;
                 if(obj.verbose)
@@ -130,17 +136,18 @@ classdef MatrixSystemModel < Recon.SysModel.SystemModel
         end
         
         % c = a*b
-        function c = mtimes(obj,b)
-            if ~isa(obj, 'Recon.SysModel.MatrixSystemModel')
-                error('Using mtimes directly is not supported.');
+        function c = mtimes(obj,b)         
+            if(obj.istranspose)
+%                 c = (b'*obj.A)'; % Dont transpose A!
+                c = obj.ATrans*b; % Dont transpose A!
+            else
+                c = obj.A*b;
             end
-            
-            c = obj.A*b;
         end
         
         % b = a'
-        function b = ctranspose(obj)
-            b = obj.A';
+        function obj = ctranspose(obj)
+            obj.istranspose = ~obj.istranspose;
         end
     end
 end

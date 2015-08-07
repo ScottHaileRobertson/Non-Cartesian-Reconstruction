@@ -30,24 +30,42 @@ classdef Iterative < Recon.DCF.DCF
             % Be clever and only calculate non-sparse k-space voxels by
             % using a sparser system model. This way you dont grid or
             % ungrid zeros unnecessarily
-            if(isa(modelObj,'Recon.SysModel.MatrixSystemModel'))
-                modelObj = modelObj.makeSuperSparse();
-                idealPSFdata = ones(size(modelObj.A,2),1);
-            else
-                idealPSFdata = ones(prod(modelObj.fullsize),1);
-            end
-            
-            obj.dcf = 1./(modelObj * idealPSFdata); % Reasonable first guess
-            for iter = 1:obj.iterations
-                if(obj.verbose)
-                    disp(['   DCF Iteration:' num2str(iter)]);
+            if(isa(modelObj,'TemporalSystemModel'))
+                nTimes = length(modelObj.A);
+                for iTime=1:nTimes
+                    disp(['Calculating DCF for time ' num2str(iTime)]);
+                    idealPSFdata = ones(size(modelObj.A{iTime},2),1);
+                       
+                    obj.dcf{iTime} = 1./(modelObj.A{iTime} * idealPSFdata); % Reasonable first guess
+                    for iter = 1:obj.iterations
+                        if(obj.verbose)
+                            disp(['   DCF Iteration:' num2str(iter)]);
+                        end
+                        obj.dcf{iTime} = obj.dcf{iTime} ./ (modelObj.A{iTime} * (modelObj.A{iTime}'*obj.dcf{iTime}));
+                    end
                 end
-                obj.dcf = obj.dcf ./ (modelObj * (modelObj'*obj.dcf));
-            end
-            
-            % Undo sparser system model so we dont break anything
-            if(isa(modelObj,'Recon.SysModel.MatrixSystemModel'))
-                modelObj = modelObj.revertSparseness();
+            else
+                if(isa(modelObj,'Recon.SysModel.MatrixSystemModel'))
+                    modelObj = modelObj.makeSuperSparse();
+                    idealPSFdata = ones(size(modelObj.A,2),1);
+                    
+                else
+                    idealPSFdata = ones(prod(modelObj.fullsize),1);
+                end
+                
+                
+                obj.dcf = 1./(modelObj * idealPSFdata); % Reasonable first guess
+                for iter = 1:obj.iterations
+                    if(obj.verbose)
+                        disp(['   DCF Iteration:' num2str(iter)]);
+                    end
+                    obj.dcf = obj.dcf ./ (modelObj * (modelObj'*obj.dcf));
+                end
+                
+                % Undo sparser system model so we dont break anything
+                if(isa(modelObj,'Recon.SysModel.MatrixSystemModel'))
+                    modelObj = modelObj.revertSparseness();
+                end
             end
         end
     end

@@ -26,8 +26,8 @@ classdef (Abstract) SystemModel
         
         function croppedVol = crop(obj,uncroppedVol)
             croppedVol = subvolume(uncroppedVol,...
-                [[0.5*(obj.fullsize-obj.cropsize)+1]; ...
-                [0.5*(obj.fullsize+obj.cropsize)]]);
+                [round([0.5*(obj.fullsize-obj.cropsize)+1]); ...
+                round([0.5*(obj.fullsize+obj.cropsize)])]);
         end
     end
     
