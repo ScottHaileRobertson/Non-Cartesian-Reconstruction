@@ -36,7 +36,7 @@ systemObj = Recon.SysModel.MatrixSystemModel(traj, overgrid_factor, ...
     output_image_size, proxObj, verbose);
 
 %% 6. Choose density compensation function (DCF)
-% dcfObj = Recon.DCF.Analytical3dRadial(traj, verbose);
+dcfObj = Recon.DCF.Analytical3dRadial(traj, verbose);
 dcfObj = Recon.DCF.Iterative(systemObj, 10, verbose);
 % dcfObj = Recon.DCF.Voronoi(traj, header, verbose);
 % dcfObj = Recon.DCF.Unity(traj, verbose);

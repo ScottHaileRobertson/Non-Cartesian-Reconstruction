@@ -1,6 +1,7 @@
 classdef ConjugateGradient < Recon.ReconModel.GriddedReconModel
     properties
         iterations;
+        weights;
     end
     methods
         function obj = ConjugateGradient(system_model, iter, verbose)
@@ -17,7 +18,7 @@ classdef ConjugateGradient < Recon.ReconModel.GriddedReconModel
             % Reconstructs an image volume from the given data using the
             % conjugate gradient algorithm
             
-            % Parse inputs
+            %Parse inputs
             if(nargin<3 || isempty(varargin{1}))
                 % If initial guess isnt given, assume zeros
                 gridVol = zeros(obj.system.fullsize);
@@ -32,7 +33,7 @@ classdef ConjugateGradient < Recon.ReconModel.GriddedReconModel
             % Be clever and only calculate non-sparse k-space voxels by
             % using a sparser system model. This way you dont grid or
             % ungrid zeros unnecessarily
-            if(isa(obj.system,'Recon.SysModel.MatrixSystemModel'))
+            if(isa(obj.system,'Recon.SysModel.MatrixSystemModel') )
                 [obj.system gridVol] = obj.system.makeSuperSparse(gridVol);
             end
             
