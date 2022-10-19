@@ -25,9 +25,17 @@ classdef (Abstract) SystemModel
         end
         
         function croppedVol = crop(obj,uncroppedVol)
-            croppedVol = subvolume(uncroppedVol,...
-                [round([0.5*(obj.fullsize-obj.cropsize)+1]); ...
-                round([0.5*(obj.fullsize+obj.cropsize)])]);
+            subVcommand  = 'croppedVol = uncroppedVol(';
+            for iDim = 1:length(obj.fullsize)
+                dimStr = num2str(iDim);
+                thisSubVcommand = ['round([0.5*(obj.fullsize(' dimStr ')-obj.cropsize(' dimStr '))+1]):round([0.5*(obj.fullsize(' dimStr ')+obj.cropsize(' dimStr '))])'];
+                subVcommand  = [subVcommand thisSubVcommand ','];
+            end
+            subVcommand = [subVcommand(1:(end-1)) ');'];
+            eval(subVcommand );
+%             croppedVol = subvolume(uncroppedVol,...
+%                 [round([0.5*(obj.fullsize-obj.cropsize)+1]); ...
+%                 round([0.5*(obj.fullsize+obj.cropsize)])]);
         end
     end
     
