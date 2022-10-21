@@ -6,16 +6,24 @@ classdef GriddedReconModel < Recon.ReconModel.ReconModel
             obj = obj@Recon.ReconModel.ReconModel(systemModel, verbose);
         end
         
-        function reconVol = reconstruct(obj, data, traj)
+        function reconVol = reconstruct(obj, data, traj, varargin)
             if(obj.verbose)
                 disp('Reconstructing...');
             end
             
+            if(nargin<=3 || isempty(varargin{1}))
+                % If initial guess isnt given, assume zeros
+                gridVol = zeros(obj.system.fullsize);
+            else
+                % first input is initial guess
+                gridVol = varargin{1};
+            end
+
             % Grid data
             if(obj.verbose)
                 disp('Gridding Data...');
             end
-            reconVol = obj.grid(data);
+            reconVol = obj.grid(data,gridVol);
             if(obj.verbose)
                 disp('Finished gridding Data...');
             end

@@ -14,7 +14,7 @@ classdef ConjugateGradient < Recon.ReconModel.GriddedReconModel
             obj.unique_string = ['cgiter' num2str(obj.iterations) '_' obj.system.unique_string];
         end
        
-        function gridVol = grid(obj, data, traj, varargin)
+        function gridVol = grid(obj, data, varargin)
             % Reconstructs an image volume from the given data using the
             % conjugate gradient algorithm
             
@@ -34,14 +34,16 @@ classdef ConjugateGradient < Recon.ReconModel.GriddedReconModel
             % using a sparser system model. This way you dont grid or
             % ungrid zeros unnecessarily
             if(isa(obj.system,'Recon.SysModel.MatrixSystemModel') )
-                [obj.system gridVol] = obj.system.makeSuperSparse(gridVol);
+                [obj.system gridVolSparse] = obj.system.makeSuperSparse(gridVol);
+            else
+                gridVolSparse = gridVol;
             end
             
             if(obj.verbose)
                 disp('   Starting Conjugate Gradient Reconstruction...');
             end    
-            [gridVol,flag,relres,iter,resvec] = lsqr(@aFun, data, 0, ...
-                obj.iterations,[],[],gridVol);
+            [gridVolSparse,flag,relres,iter,resvec] = lsqr(@aFun, data, 0, ...
+                obj.iterations,[],[],gridVolSparse);
             if(obj.verbose)
                 disp('   Finished Conjugate Gradient Reconstruction.');
             end   
@@ -50,7 +52,13 @@ classdef ConjugateGradient < Recon.ReconModel.GriddedReconModel
             % using a sparser system model. This way you dont grid or
             % ungrid zeros unnecessarily
             if(isa(obj.system,'Recon.SysModel.MatrixSystemModel'))
-                [obj.system gridVol] = obj.system.revertSparseness(gridVol);
+                [obj.system gridVolSparse] = obj.system.revertSparseness(gridVolSparse);
+
+                % only update nonzero pixels
+                nonzeroPizels = (gridVolSparse~=0);
+                gridVol(nonzeroPizels) = gridVolSparse(nonzeroPizels);
+                 else
+                     gridVol = gridVolSparse;
             end 
                         
             function y = aFun(x_,transp_flag)
