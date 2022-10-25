@@ -15,8 +15,10 @@ classdef GriddedReconModel < Recon.ReconModel.ReconModel
                 % If initial guess isnt given, assume zeros
                 gridVol = zeros(obj.system.fullsize);
             else
-                % first input is initial guess
+                % first input is initial guess, but its in image space, so
+                % calculate k-space
                 gridVol = varargin{1};
+                gridVol = fftshift(fftn(fftshift(gridVol)));
             end
 
             % Grid data
@@ -35,6 +37,7 @@ classdef GriddedReconModel < Recon.ReconModel.ReconModel
                 disp('Calculating IFFTN...');
             end
             % Calculate image space
+            reconVol = ifftshift(reconVol);
             reconVol = ifftn(reconVol);
             reconVol = fftshift(reconVol);
             if(obj.verbose)
@@ -62,6 +65,7 @@ classdef GriddedReconModel < Recon.ReconModel.ReconModel
                 if(obj.verbose)
                     disp('Calculating Image domain deapodization function...');
                 end
+                deapVol = ifftshift(deapVol);
                 deapVol = ifftn(deapVol);
                 deapVol = fftshift(deapVol);
                 if(obj.verbose)
