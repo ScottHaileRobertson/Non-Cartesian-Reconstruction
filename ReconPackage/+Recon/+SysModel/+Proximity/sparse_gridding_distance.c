@@ -53,7 +53,9 @@ double max(double a, double b) {
 }
 #endif
 
-// #define DEBUG 1;
+/* 
+#define DEBUG 1; 
+*/
 
 /*#ifndef round
  * int round(double num) {

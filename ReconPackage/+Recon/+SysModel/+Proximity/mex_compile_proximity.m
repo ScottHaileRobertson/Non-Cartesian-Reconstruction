@@ -21,8 +21,17 @@ if do_compile
         mex -largeArrayDims sparse_gridding_distance_mex.c;
     catch err
         warning(err.message);
+        fprintf('cd %s\n',pwd);
         mex -n  -largeArrayDims sparse_gridding_distance_mex.c;
-        db_inplace(mfilename,'COMPILER PROBLEMS, We ran in test mode, use terminal commands preceding this line as examples to compile manually. Of note, -ansi may cause trouble on linux systems.');
+        wrds= sprintf('%s\n\t%s\n\t%s\n\t%s\n\t%s\n\t%s',... 
+            'COMPILER PROBLEMS, We ran in test mode!', ...1
+            'Use terminal commands preceding this line', ...2
+            'as examples to compile manually. ', ...3
+            'Of note, -ansi may cause trouble on linux systemms.', ...4
+            'DONT FORGET TO chage to correct directory ', ...5
+            pwd ... 6
+            );
+        db_inplace(mfilename,wrds);
     end
 end
 % Change back to starting directory
