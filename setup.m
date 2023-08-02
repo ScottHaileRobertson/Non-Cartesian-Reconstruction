@@ -13,4 +13,5 @@ path(genpath([rootDistribDir filesep() 'ReconPackage']),path);
 % Compiling MEX code
 disp('Compiling MEX code...');
 Recon.SysModel.Proximity.mex_compile_proximity();
+mex_compile_sparseGridder();
 disp('Compilation worked');
